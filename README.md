@@ -62,8 +62,8 @@ Follow these steps to run the chatbot locally:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/ShukakuAI.git
-    cd ShukakuAI
+    git clone https://github.com/Harshitagarwal113/Shukaku-AI.git
+    cd Shukaku-AI
     ```
 
 2.  **Install dependencies:**

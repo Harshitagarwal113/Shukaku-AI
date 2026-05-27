@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shukaku AI</title>
+    <!-- Modern font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Highlight.js for code formatting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('web.static', filename='css/style.css') }}?v=1.1">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h2>Shukaku AI</h2>
+                </div>
+                <button class="close-sidebar-btn" id="close-sidebar-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-content">
+                <button id="new-chat-btn" class="primary-btn">
+                    <i class="fa-solid fa-plus"></i> New Session
+                </button>
+                
+                <div class="recent-chats">
+                    <h3>Recent Chats</h3>
+                    <ul class="recent-chats-list" id="recent-chats-list">
+                        <!-- Populated dynamically via JS -->
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="dot online"></span> System Online
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <header class="chat-header">
+                <button class="menu-toggle-btn" id="menu-toggle-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="header-info">
+                    <h1>Shukaku AI</h1>
+                    <p>Powered by Gemini API</p>
+                </div>
+            </header>
+            
+            <div class="chat-messages" id="chat-messages">
+                <!-- Empty State (Welcome Message) -->
+                <div class="welcome-container" id="welcome-container">
+                    <div class="welcome-logo">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <h2>How can I help you today?</h2>
+                    <p>I am Shukaku AI, specializing in technical questions. Try asking me about one of these topics:</p>
+                    
+                    <div class="capabilities-grid">
+                        <div class="capability-card">
+                            <i class="fa-brands fa-python"></i>
+                            <span>Programming</span>
+                        </div>
+                        <div class="capability-card">
+                            <i class="fa-brands fa-linux"></i>
+                            <span>Linux OS</span>
+                        </div>
+                        <div class="capability-card">
+                            <i class="fa-brands fa-docker"></i>
+                            <span>Docker</span>
+                        </div>
+                        <div class="capability-card">
+                            <i class="fa-brands fa-aws"></i>
+                            <span>AWS Cloud</span>
+                        </div>
+                        <div class="capability-card">
+                            <i class="fa-solid fa-brain"></i>
+                            <span>AI / ML</span>
+                        </div>
+                        <div class="capability-card">
+                            <i class="fa-solid fa-code-branch"></i>
+                            <span>DevOps</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-container">
+                <form id="chat-form">
+                    <div class="input-wrapper">
+                        <textarea id="message-input" placeholder="Ask a technical question..." rows="1"></textarea>
+                        <button type="submit" id="send-btn" class="send-btn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="input-footer">
+                        <small>Shukaku AI focuses specifically on technical domains.</small>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Markdown Parser & Sanitizer -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
+    <!-- Code Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <!-- App Logic -->
+    <script src="{{ url_for('web.static', filename='js/main.js') }}?v=1.1"></script>
+</body>
+</html>

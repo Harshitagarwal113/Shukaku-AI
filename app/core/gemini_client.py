@@ -2,7 +2,7 @@ import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from config import config
 import os
-from .prompt_chain import PromptChain
+from prompts.system_prompt import SYSTEM_PROMPT
 
 class GeminiClient:
     """
@@ -30,10 +30,8 @@ class GeminiClient:
         # Initialize model with system instruction
         self.model = genai.GenerativeModel(
             model_name=self.model_name,
-            system_instruction=PromptChain.SYSTEM_INSTRUCTION,
+            system_instruction=SYSTEM_PROMPT,
             safety_settings=self.safety_settings,
-            # Force JSON response type if using compatible model version
-            generation_config={"response_mime_type": "application/json"}
         )
 
     def generate_response(self, user_message: str, history: list) -> str:
@@ -51,3 +49,14 @@ class GeminiClient:
         except Exception as e:
             print(f"Error calling Gemini API: {e}")
             return '{"response": "I encountered an error communicating with the AI service. Please check your API key and connection.", "status": "error", "code_snippet": null}'
+
+    def generate_simple(self, prompt: str) -> str:
+        """
+        Sends a single prompt to Gemini and returns the raw text response.
+        """
+        try:
+            response = self.model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            print(f"Error calling Gemini API for simple generation: {e}")
+            return ""

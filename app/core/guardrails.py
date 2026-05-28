@@ -181,9 +181,9 @@ class Guardrails:
             return {
                 "is_valid": False,
                 "rejection_message": {
-                    "response": "Your message is too long. Please limit prompts to 1000 characters or less.",
-                    "code_snippet": None,
-                    "status": "error"
+                    "intent": "unknown",
+                    "risk_level": "high",
+                    "response": "Your message is too long. Please limit prompts to 1000 characters or less."
                 }
             }
             
@@ -192,9 +192,9 @@ class Guardrails:
             return {
                 "is_valid": False,
                 "rejection_message": {
-                    "response": "Your message contains inappropriate language. Please maintain a professional tone.",
-                    "code_snippet": None,
-                    "status": "error"
+                    "intent": "toxic_behavior",
+                    "risk_level": "high",
+                    "response": "Your message contains inappropriate language. Please maintain a professional tone."
                 }
             }
             
@@ -203,9 +203,9 @@ class Guardrails:
             return {
                 "is_valid": False,
                 "rejection_message": {
-                    "response": "Security Alert: Your prompt contains unsafe patterns or attempts to bypass system instructions. Request blocked.",
-                    "code_snippet": None,
-                    "status": "error"
+                    "intent": "malicious_activity",
+                    "risk_level": "high",
+                    "response": "Security Alert: Your prompt contains unsafe patterns or attempts to bypass system instructions. Request blocked."
                 }
             }
             
@@ -214,9 +214,9 @@ class Guardrails:
             return {
                 "is_valid": False,
                 "rejection_message": {
-                    "response": "I am not here to help you with this, Please ask me some technical questions.",
-                    "code_snippet": None,
-                    "status": "rejected"
+                    "intent": "off_topic",
+                    "risk_level": "low",
+                    "response": "I am not here to help you with this, Please ask me some technical questions."
                 }
             }
             

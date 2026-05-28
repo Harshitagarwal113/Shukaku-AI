@@ -1,21 +1,21 @@
 from .guardrails import Guardrails
 from .memory import ChatMemory
-from .prompt_chain import PromptChain
 from .gemini_client import GeminiClient
-from .parser import ResponseParser
+from prompts.chaining import PromptChainer
+from parsers.output_parser import OutputParser
 
 class AIPipeline:
     """
     Orchestrates the entire AI flow:
-    Input -> Guardrails -> Memory -> Prompt -> Gemini -> Parse -> Output
+    Input -> Guardrails -> Memory -> Chaining -> Parse -> Output
     """
     
     def __init__(self):
         self.guardrails = Guardrails()
         self.memory = ChatMemory(max_history=10)
-        self.prompt_chain = PromptChain()
         self.client = GeminiClient()
-        self.parser = ResponseParser()
+        self.prompt_chain = PromptChainer(self.client)
+        self.parser = OutputParser()
         
     def process_message(self, session_id: str, user_message: str) -> dict:
         """
@@ -30,24 +30,17 @@ class AIPipeline:
         # If session doesn't exist, memory module will create it implicitly on add_message
         history = self.memory.get_history(session_id)
         
-        # Step 3: Format Prompt/History for Gemini
-        formatted_history = self.prompt_chain.build_prompt(user_message, history)
-        
-        # Step 4: Call Model
-        raw_response = self.client.generate_response(user_message, formatted_history)
+        # Step 3 & 4: Prompt Chaining & Model Execution (Safety Check -> Intent -> Generation -> JSON)
+        raw_json_response = self.prompt_chain.execute_chain(user_message, history)
         
         # Step 5: Parse Response
-        parsed_response = self.parser.parse(raw_response)
+        parsed_response = self.parser.parse(raw_json_response)
         
         # Step 6: Update Memory (Only if successful)
-        if parsed_response.get("status") != "error":
+        if parsed_response.get("intent") != "malicious_activity" and parsed_response.get("risk_level") == "low":
             self.memory.add_message(session_id, "user", user_message)
             
-            # Combine response and code for memory context
             assistant_content = parsed_response.get("response", "")
-            if parsed_response.get("code_snippet"):
-                assistant_content += f"\n\n```\n{parsed_response.get('code_snippet')}\n```"
-                
             self.memory.add_message(session_id, "assistant", assistant_content)
             
         return parsed_response

@@ -145,8 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         appendAssistantMessage({ 
                             response: msg.content, 
-                            status: "success", 
-                            code_snippet: null 
+                            intent: "unknown",
+                            risk_level: "low"
                         });
                     }
                 });
@@ -261,22 +261,16 @@ document.addEventListener('DOMContentLoaded', () => {
         msgDiv.className = 'message assistant-message';
         let contentHtml = '';
         
-        if (data.status === 'rejected' || data.status === 'error') {
+        if (data.risk_level === 'high' || data.intent === 'off_topic') {
             msgDiv.classList.add('status-rejected');
             contentHtml = `<p><strong>${escapeHTML(data.response || '')}</strong></p>`;
         } else {
             if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
                 let fullText = data.response || '';
-                if (data.code_snippet) {
-                    fullText += `\n\n\`\`\`\n${data.code_snippet}\n\`\`\``;
-                }
                 const rawHtml = marked.parse(fullText);
                 contentHtml = DOMPurify.sanitize(rawHtml);
             } else {
                 contentHtml = `<p>${formatTextWithLineBreaks(escapeHTML(data.response || ''))}</p>`;
-                if (data.code_snippet) {
-                    contentHtml += `<pre><code>${escapeHTML(data.code_snippet)}</code></pre>`;
-                }
             }
         }
         
@@ -333,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function appendErrorMessage(text) {
-        appendAssistantMessage({ response: text, status: "error" });
+        appendAssistantMessage({ response: text, risk_level: "high", intent: "error" });
     }
 
     function showTypingIndicator() {

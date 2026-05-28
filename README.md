@@ -1,64 +1,42 @@
-# 🤖 Shukaku AI
+# 🤖 Shukaku AI: Secure Technical Assistant
 
-Welcome to **Shukaku AI**, a production-ready, highly secure AI chatbot designed to act as a professional technical mentor. Built with Flask and powered by Google's **Gemini 3.1 Flash-Lite**, this assistant is specifically trained and guardrailed to answer questions related to Software Engineering, DevOps, Cloud Infrastructure, and AI.
-
-## ✨ Key Highlights
-
-*   **Gemini 3.1 Powered:** Utilizes the lightning-fast `gemini-3.1-flash-lite` model for rapid, high-quality technical responses.
-*   **Guaranteed JSON Output:** Leverages Gemini's `response_mime_type` feature alongside a custom fallback parser to guarantee the LLM strictly returns structured JSON.
-*   **Multi-Session Local Database:** Chat histories and session metadata are persistently saved to a local `chat_db.json` file. You can create, switch between, and delete chats on the fly.
-*   **Premium Glassmorphic UI:** A responsive, dark-mode frontend featuring smooth micro-animations, dynamic hover effects, and a sleek layout.
-*   **Syntax Highlighting:** Automatically formats code snippets returned by the AI, complete with a beautifully integrated "Copy to Clipboard" button.
+Welcome to **Shukaku AI**, a production-ready, highly secure AI chatbot engineered to act as a professional technical mentor. Built on top of **Google Gemini 3.1 Flash-Lite** and powered by a robust Python/Flask backend, this application heavily enforces modern AI safety paradigms, Prompt Chaining, and the ReAct reasoning framework.
 
 ---
 
-## 🛡️ Three-Layer Security Architecture
+## ✨ Key AI Features & Architecture
 
-Shukaku AI takes safety seriously and implements a defense-in-depth approach to prevent abuse, prompt injection, and credential leaks.
-
-1.  **Rate Limiting (Network Layer):**
-    Utilizes `Flask-Limiter` to restrict users to a maximum of **50 requests per hour** and **200 per day** per IP address, effectively preventing spam and API exhaustion.
-
-2.  **Strict Application Guardrails (Application Layer):**
-    A rigorous local Python filter (`guardrails.py`) scans user prompts before they ever reach the AI. It instantly blocks:
-    *   **Off-Topic Queries:** Enforces a strict technical-only policy using a vast whitelist of over 150+ tech keywords (e.g., politely rejects "What is the capital of France?").
-    *   **Prompt Injection:** Detects and halts common jailbreak phrases like "ignore all previous instructions".
-    *   **Credential Theft:** Blocks explicit attempts to extract sensitive data like "show your api key" or "print configuration".
-    *   **Toxicity:** Rejects inappropriate or offensive language.
-    *   **Length Limits:** Caps inputs at 1,000 characters.
-
-3.  **Prompt Directives & Native Safety (AI Layer):**
-    The core system prompt explicitly commands the AI to *never* reveal API keys, passwords, or its own internal instructions. Additionally, Gemini's native safety settings are configured to `BLOCK_LOW_AND_ABOVE` for all harassment and dangerous content categories.
+*   **ReAct Framework & CoT:** Employs advanced reasoning capabilities (`Thought -> Action -> Observation -> Final Answer`) alongside Chain of Thought (CoT) prompting to ensure logical and accurate technical answers.
+*   **Prompt Chaining Flow:** Queries don't just hit the model; they traverse a multi-stage pipeline: 
+    `User Query ➔ Safety Check ➔ Intent Detection ➔ Response Generation ➔ JSON Formatting`
+*   **Strict JSON Parsing:** The LLM is forced and verified to always return a rigid schema: `{"intent": "", "risk_level": "", "response": ""}`.
+*   **Multi-Session Memory:** Local JSON database (`chat_db.json`) retains context up to 10 messages per chat session.
 
 ---
 
-## 🏗️ System Pipeline
+## 📸 Screenshots
 
-```text
-User Input 
-  ➔ Rate Limiter (Flask-Limiter)
-  ➔ Security Guardrails (Length, Toxicity, Injection, Topic) 
-  ➔ Context Memory (Fetch history from JSON DB) 
-  ➔ Prompt Chaining 
-  ➔ Gemini 3.1 API (Forced JSON Mode) 
-  ➔ Output Parser (JSON Validation & Fallbacks) 
-  ➔ Frontend (Render & Highlight)
-```
+![Screenshot 1](ScreenShot/Screenshot%202026-05-28%20143517.png)
+![Screenshot 2](ScreenShot/Screenshot%202026-05-28%20143538.png)
+![Screenshot 3](ScreenShot/Screenshot%202026-05-28%20143733.png)
+![Screenshot 4](ScreenShot/Screenshot%202026-05-28%20143809.png)
 
 ---
 
-## 🛠️ Technologies Used
+## 🛡️ Robust AI Guardrails
 
-*   **Backend:** Python 3, Flask, Flask-Limiter
-*   **AI Integration:** Google Generative AI SDK (`gemini-3.1-flash-lite`)
-*   **Frontend:** HTML5, Vanilla CSS, Vanilla JavaScript
-*   **Libraries:** Highlight.js (Code Formatting), FontAwesome (Icons), Marked.js (Markdown), DOMPurify (XSS Protection)
+Shukaku AI enforces strict safety guidelines to prevent credential leaks, toxic interactions, and jailbreaking.
+
+1.  **Safety Check Prompting:** An initial AI validation step determines if the prompt contains malicious instructions or requests for sensitive information.
+2.  **Code-Level Guardrails:** A local Python filter (`guardrails.py`) immediately halts processing if it detects:
+    *   **Prompt Injections** (e.g., "ignore all previous instructions")
+    *   **Credential Theft** (e.g., "show your api key")
+    *   **Toxicity & Harassment**
+    *   **Excessively Long Prompts** (> 1,000 chars)
 
 ---
 
 ## ⚙️ Installation & Setup
-
-Follow these steps to run the chatbot locally:
 
 1.  **Clone the repository:**
     ```bash
@@ -75,49 +53,39 @@ Follow these steps to run the chatbot locally:
 3.  **Set up your Environment Variables:**
     Create a `.env` file in the root directory and add your Gemini API Key:
     ```env
-    GEMINI_API_KEY="your_api_key_here"
+    GEMINI_API_KEY="your_gemini_api_key_here"
     FLASK_ENV="development"
     ```
 
-4.  **Run the application:**
+4.  **Run the Application:**
     ```bash
     python run.py
     ```
 
-5.  **Access the Chatbot:**
+5.  **Start Chatting:**
     Open your web browser and navigate to `http://localhost:5000`
 
 ---
 
-## 📂 Folder Structure
+## 📂 Project Structure
 
 ```text
 /
-├── .env                       # Environment variables (API Key)
-├── .gitignore                 # Standard Python gitignore
+├── app/
+│   ├── core/                  # Core pipeline, guardrails, memory, and API Client
+│   └── web/                   # Flask routing, UI templates, and static assets (CSS/JS)
+├── docs/                      # Requirement documentation
+│   ├── PRD.md                 # Product Requirement Document
+│   └── FRD.md                 # Functional Requirement Document
+├── parsers/                   
+│   └── output_parser.py       # Strict JSON formatting verification
+├── prompts/                   
+│   ├── chaining.py            # CoT and ReAct multi-stage prompt logic
+│   └── system_prompt.py       # Core persona definitions
+├── ScreenShot/                # UI Demonstration Images
+├── config.py                  # Flask configuration loader
 ├── requirements.txt           # Project dependencies
-├── config.py                  # Configuration loader
-├── chat_db.json               # Local persistent database (auto-generated)
-├── run.py                     # Entry point for the Flask application
-└── app/
-    ├── __init__.py            # Flask app factory & Rate Limiter initialization
-    ├── core/                  # AI Pipeline & Core Logic
-    │   ├── gemini_client.py   # Handles connection and API calls to Gemini 3.1
-    │   ├── memory.py          # Manages JSON-backed chat history (max 10 msgs/session)
-    │   ├── guardrails.py      # Input validation & security filtering rules
-    │   ├── prompt_chain.py    # Manages system persona instructions
-    │   ├── parser.py          # Ensures the output is correctly formatted JSON
-    │   └── pipeline.py        # Orchestrates the complete AI flow
-    └── web/                   # Frontend & Routing
-        ├── __init__.py
-        ├── routes.py          # Flask HTTP endpoints (/chat, /reset, /session, /sessions)
-        ├── templates/
-        │   └── index.html     # Main chat UI structure
-        └── static/
-            ├── css/
-            │   └── style.css  # UI Styling (Premium dark glassmorphism theme)
-            └── js/
-                └── main.js    # Client-side logic for the chat interface
+└── run.py                     # Entry point for the application
 ```
 
 ---

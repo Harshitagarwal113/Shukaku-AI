@@ -12,6 +12,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
     
     <link rel="stylesheet" href="{{ url_for('web.static', filename='css/style.css') }}?v=1.1">
+    <!-- Vercel Web Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -20,9 +29,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fa-solid fa-microchip"></i>
-                    </div>
+                    <div class="logo-icon" style="background-image: url('{{ url_for('web.static', filename='shukaku_logo.png', v=3) }}');"></div>
                     <h2>Shukaku AI</h2>
                 </div>
                 <button class="close-sidebar-btn" id="close-sidebar-btn">
@@ -58,16 +65,13 @@
                 </button>
                 <div class="header-info">
                     <h1>Shukaku AI</h1>
-                    <p>Powered by Gemini API</p>
                 </div>
             </header>
             
             <div class="chat-messages" id="chat-messages">
                 <!-- Empty State (Welcome Message) -->
                 <div class="welcome-container" id="welcome-container">
-                    <div class="welcome-logo">
-                        <i class="fa-solid fa-robot"></i>
-                    </div>
+                    <div class="welcome-logo" style="background-image: url('{{ url_for('web.static', filename='shukaku_logo.png', v=3) }}');"></div>
                     <h2>How can I help you today?</h2>
                     <p>I am Shukaku AI, specializing in technical questions. Try asking me about one of these topics:</p>
                     

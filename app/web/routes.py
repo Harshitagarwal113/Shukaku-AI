@@ -13,7 +13,7 @@ def index():
     return render_template('index.html')
 
 @web_bp.route('/chat', methods=['POST'])
-@limiter.limit("10 per minute")
+@limiter.limit("80 per minute")
 def chat():
     """Handle incoming chat messages."""
     data = request.json

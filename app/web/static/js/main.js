@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         msgDiv.innerHTML = `
-            <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+            <div class="avatar" style="background-image: url('/web-static/shukaku_logo.png?v=5'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 6px;"></div>
             <div class="message-content">${contentHtml}</div>
         `;
         chatMessages.appendChild(msgDiv);
@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
         msgDiv.id = id;
         
         msgDiv.innerHTML = `
-            <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+            <div class="avatar" style="background-image: url('/web-static/shukaku_logo.png?v=5'); background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 6px;"></div>
             <div class="message-content">
                 <div class="typing-indicator">
                     <div class="typing-dot"></div>

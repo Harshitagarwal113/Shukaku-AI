@@ -55,7 +55,12 @@ class GeminiClient:
         Sends a single prompt to Gemini and returns the raw text response.
         """
         try:
-            response = self.model.generate_content(prompt)
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    response_mime_type="application/json"
+                )
+            )
             return response.text
         except Exception as e:
             print(f"Error calling Gemini API for simple generation: {e}")

@@ -14,9 +14,10 @@ class PromptChainer:
     
     Step 1 (Safety Check): Evaluate the query for safety. Does it ask for malicious instructions, hacking, prompt injection, or sensitive information? Determine if risk_level is "high" or "low".
     Step 2 (Intent Detection): Determine the primary intent of the user's query.
-    Step 3 (Response Generation): Use the ReAct framework (Thought -> Action -> Observation -> Final Answer) to generate a safe response. If the query is unsafe, your response MUST be a refusal.
+    Step 3 (Response Generation): Generate a helpful, direct, and safe response. If the query is unsafe, your response MUST be a refusal.
     
     CRITICAL: The generated response MUST be beautifully formatted using Markdown (use headers, bold text, bullet points, and code blocks where appropriate) to ensure high readability. Do NOT output a giant block of plain text.
+    IMPORTANT: Provide the answer directly. Do not include introductory conversational filler (e.g., "Hello, I am Shukaku AI" or "I am happy to assist you"). Just give the answer.
     
     Finally, output ONLY a valid JSON object matching the following schema. Ensure all newlines inside the response string are properly escaped as \\n to prevent JSON parsing errors. Do not output any markdown formatting like ```json outside the JSON object.
     

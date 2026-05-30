@@ -11,8 +11,13 @@ class ChatMemory:
     
     def __init__(self, max_history=10, db_file="chat_db.json"):
         self.max_history = max_history
-        self.db_file = db_file
         
+        # Vercel's root filesystem is read-only. We must write to /tmp.
+        if os.environ.get("VERCEL") == "1":
+            self.db_file = f"/tmp/{db_file}"
+        else:
+            self.db_file = db_file
+            
         # Format: { "session_id": [{"role": "user", "content": "..."}] }
         self.sessions: Dict[str, List[Dict[str, str]]] = {}
         # Format: [{"id": "...", "title": "..."}]

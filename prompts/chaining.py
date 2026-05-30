@@ -16,12 +16,14 @@ class PromptChainer:
     Step 2 (Intent Detection): Determine the primary intent of the user's query.
     Step 3 (Response Generation): Use the ReAct framework (Thought -> Action -> Observation -> Final Answer) to generate a safe response. If the query is unsafe, your response MUST be a refusal.
     
-    Finally, output ONLY a valid JSON object matching the following schema. Do not output any markdown formatting like ```json or other text outside the JSON object.
+    CRITICAL: The generated response MUST be beautifully formatted using Markdown (use headers, bold text, bullet points, and code blocks where appropriate) to ensure high readability. Do NOT output a giant block of plain text.
+    
+    Finally, output ONLY a valid JSON object matching the following schema. Ensure all newlines inside the response string are properly escaped as \\n to prevent JSON parsing errors. Do not output any markdown formatting like ```json outside the JSON object.
     
     {{
         "intent": "<string representing the intent, use 'malicious_activity' if unsafe>",
         "risk_level": "<high|low>",
-        "response": "<The final generated response>"
+        "response": "<The final beautifully formatted Markdown response>"
     }}
     
     History: {history}

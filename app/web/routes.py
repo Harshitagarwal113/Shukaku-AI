@@ -9,9 +9,14 @@ web_bp = Blueprint('web', __name__, template_folder='templates', static_folder='
 pipeline = AIPipeline()
 
 def init_session():
-    """Ensure the user has an active session ID."""
-    if 'active_session_id' not in session:
-        # Create the first session
+    """Ensure the user has an active session ID and it exists in memory."""
+    active_id = session.get('active_session_id')
+    recent = pipeline.memory.get_recent_sessions()
+    
+    valid = active_id and any(s['id'] == active_id for s in recent)
+    
+    if not valid:
+        # Create a new session if none exists or if it was lost (e.g. Vercel cold start)
         new_id = pipeline.memory.create_session()
         session['active_session_id'] = new_id
         session.modified = True

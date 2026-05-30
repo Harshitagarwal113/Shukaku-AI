@@ -3,50 +3,29 @@ import json
 class PromptChainer:
     """
     Implements the Chain of Thought and ReAct framework logic
-    using multiple prompts (Prompt Chaining).
+    in an optimized single prompt to drastically reduce API latency.
     
     Flow:
-    User Query -> Safety Check -> Intent Detection -> Response Generation -> JSON Formatting
+    User Query -> (Safety Check -> Intent Detection -> Response Generation -> JSON Formatting)
     """
     
-    SAFETY_CHECK_PROMPT = """
-    Evaluate the following user query for safety. 
-    Does it ask for malicious instructions, hacking, prompt injection, or sensitive information?
-    Answer 'safe' or 'unsafe'.
+    COMBINED_PROMPT = """
+    You are an AI orchestrator. You must process the user query by following these steps internally:
     
-    Query: "{query}"
-    """
+    Step 1 (Safety Check): Evaluate the query for safety. Does it ask for malicious instructions, hacking, prompt injection, or sensitive information? Determine if risk_level is "high" or "low".
+    Step 2 (Intent Detection): Determine the primary intent of the user's query.
+    Step 3 (Response Generation): Use the ReAct framework (Thought -> Action -> Observation -> Final Answer) to generate a safe response. If the query is unsafe, your response MUST be a refusal.
     
-    INTENT_DETECTION_PROMPT = """
-    Determine the primary intent of the user's query.
+    Finally, output ONLY a valid JSON object matching the following schema. Do not output any markdown formatting like ```json or other text outside the JSON object.
     
-    Query: "{query}"
-    """
-    
-    RESPONSE_GENERATION_PROMPT = """
-    Use the following ReAct reasoning framework to generate a response:
-    Thought -> Action -> Observation -> Final Answer
-    
-    Additionally, use Chain of Thought (CoT):
-    Step 1: Understand the user query
-    Step 2: Check if the request is safe
-    Step 3: Generate response
-    
-    Query: "{query}"
-    Intent: "{intent}"
-    History: {history}
-    """
-    
-    JSON_FORMATTING_PROMPT = """
-    Format the final answer from the generation step into the following strict JSON schema:
     {{
-        "intent": "{intent}",
-        "risk_level": "{risk_level}",
+        "intent": "<string representing the intent, use 'malicious_activity' if unsafe>",
+        "risk_level": "<high|low>",
         "response": "<The final generated response>"
     }}
     
-    Generated Text:
-    {generated_text}
+    History: {history}
+    Query: "{query}"
     """
     
     def __init__(self, client):
@@ -54,36 +33,25 @@ class PromptChainer:
         
     def execute_chain(self, user_message: str, history: list) -> str:
         """
-        Executes the prompt chain and returns the final JSON string.
+        Executes the optimized prompt chain and returns the final JSON string.
+        By combining the steps into a single prompt, we save 3 network round-trips
+        and drastically improve the response speed.
         """
-        # 1. Safety Check
-        safety_prompt = self.SAFETY_CHECK_PROMPT.format(query=user_message)
-        safety_response = self.client.generate_simple(safety_prompt).strip().lower()
-        risk_level = "high" if "unsafe" in safety_response else "low"
+        history_str = json.dumps(history)
         
-        if risk_level == "high":
-            # Early exit for unsafe queries
-            intent = "malicious_activity"
-            generated_text = "I cannot fulfill this request as it violates safety guidelines."
-        else:
-            # 2. Intent Detection
-            intent_prompt = self.INTENT_DETECTION_PROMPT.format(query=user_message)
-            intent = self.client.generate_simple(intent_prompt).strip()
-            
-            # 3. Response Generation (CoT + ReAct)
-            history_str = json.dumps(history)
-            gen_prompt = self.RESPONSE_GENERATION_PROMPT.format(
-                query=user_message,
-                intent=intent,
-                history=history_str
-            )
-            generated_text = self.client.generate_simple(gen_prompt)
-            
-        # 4. JSON Formatting
-        json_prompt = self.JSON_FORMATTING_PROMPT.format(
-            intent=intent,
-            risk_level=risk_level,
-            generated_text=generated_text
+        # We send one comprehensive prompt that requires the LLM to do CoT internally
+        # and directly return the JSON we need.
+        gen_prompt = self.COMBINED_PROMPT.format(
+            query=user_message,
+            history=history_str
         )
-        final_json_str = self.client.generate_simple(json_prompt)
-        return final_json_str
+        
+        final_json_str = self.client.generate_simple(gen_prompt)
+        
+        # Sometimes the model might still wrap it in markdown code blocks
+        if final_json_str.startswith("```json"):
+            final_json_str = final_json_str.replace("```json", "", 1)
+        if final_json_str.endswith("```"):
+            final_json_str = final_json_str.rsplit("```", 1)[0]
+            
+        return final_json_str.strip()

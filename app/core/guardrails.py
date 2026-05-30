@@ -20,7 +20,7 @@ class Guardrails:
         "blockchain", "web3", "smart contracts", "ethereum",
         "game development", "unity", "unreal engine",
         "system administration", "sysadmin", "it support",
-        "shukaku", "creator", "harshit", "agarwal",
+        "shukaku", "creator", "harshit", "agarwal", "owner", "name", "who",
         # Added 50+ new topics
         "agile", "scrum", "kanban", "software architecture", "microservices", "serverless", "cloud native",
         "google cloud", "gcp", "microsoft azure", "azure", "oracle cloud", "ibm cloud",
